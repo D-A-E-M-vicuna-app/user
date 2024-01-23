@@ -5,6 +5,13 @@ import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
+import { DeleteUserResponse } from './responses/delete-user.response';
+import { LoginUserInput } from './dto/login-user.input';
+import { LoginUserResponse } from './responses/login-user.response';
+import * as jwt from 'jsonwebtoken';
+import * as dotenv from 'dotenv';
+import { CreateUserResponse } from './responses/create-user.response';
+dotenv.config();
 
 @Injectable()
 export class UserService {
@@ -14,7 +21,32 @@ export class UserService {
     private usersRepository: Repository<User>,
   ) {}
 
-  async createUser(createUserInput: CreateUserInput): Promise<User> {
+  async login(loginUserInput: LoginUserInput): Promise<LoginUserResponse> {
+    const user = await this.usersRepository.findOne({ where: { email: loginUserInput.email } });
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    //coomparar la contraseña
+    const isPasswordValid = await bcrypt.compare(loginUserInput.password, user.password);
+    if (!isPasswordValid) {
+      throw new Error('Invalid credentials');
+    }
+    //generar el token
+    const newAccessToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    user.accessToken = newAccessToken;
+    await this.usersRepository.save(user);
+
+    return {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      accessToken: user.accessToken,
+    };
+  }  
+
+  async createUser(createUserInput: CreateUserInput): Promise<CreateUserResponse> {
     //verificar que no exista el usuario en la base de datos
     const passwordHashed = await bcrypt.hash(createUserInput.password, 10);
     const existingUser = await this.usersRepository.findOne({ where: { email: createUserInput.email } });
@@ -27,7 +59,23 @@ export class UserService {
       ...createUserInput,
       password: passwordHashed,
     });
-    return this.usersRepository.save(newUser);
+
+    // Genera un nuevo accessToken
+    const accessToken = jwt.sign({ userId: newUser.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    // Asigna el accessToken al usuario
+    newUser.accessToken = accessToken;
+
+    await this.usersRepository.save(newUser);
+
+
+    return {
+      id: newUser.id,
+      firstName: newUser.firstName,
+      lastName: newUser.lastName,
+      email: newUser.email,
+      accessToken: newUser.accessToken,
+    };
   }
 
   findAll(): Promise<User[]> {
@@ -42,7 +90,26 @@ export class UserService {
     return `This action updates a #${id} user`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async deleteUser(email: string): Promise<DeleteUserResponse> {
+    const user = await this.usersRepository.findOne({ where: { email } });
+    if (!user) {
+      return { success: false, message: 'User not found' };
+      //throw new Error('User not found');
+    }
+    this.usersRepository.remove(user);
+    return { success: true, message: 'User deleted successfully'}
   }
+  /*
+  async logout(userId: number): Promise<void> {
+  const user = await this.usersRepository.findOne(userId);
+
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  // Invalida el token de acceso del usuario
+  user.accessToken = null;
+  await this.usersRepository.save(user);
+  }
+  */
 }

@@ -3,13 +3,23 @@ import { UserService } from './user.service';
 import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
+import { DeleteUserResponse } from './responses/delete-user.response';
+import { DeleteUserInput } from './dto/delete-user.input';
+import { LoginUserResponse } from './responses/login-user.response';
+import { LoginUserInput } from './dto/login-user.input';
+import { CreateUserResponse } from './responses/create-user.response';
 
 @Resolver(() => User)
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
+  @Query(() => LoginUserResponse, {name: 'login'})
+  login(@Args('LoginUserInput') loginUserInput: LoginUserInput): Promise<LoginUserResponse>{
+    return this.userService.login(loginUserInput);
+  }
+
   @Mutation(() => User)
-  createUser(@Args('createUserInput') createUserInput: CreateUserInput): Promise<User> {
+  createUser(@Args('CreateUserInput') createUserInput: CreateUserInput): Promise<CreateUserResponse> {//register
     return this.userService.createUser(createUserInput);
   }
 
@@ -28,8 +38,8 @@ export class UserResolver {
     return this.userService.update(updateUserInput.id, updateUserInput);
   }
 
-  @Mutation(() => User)
-  removeUser(@Args('id', { type: () => Int }) id: number) {
-    return this.userService.remove(id);
+  @Mutation(() => DeleteUserResponse, { name: 'deleteUser' })
+  async deleteUser(@Args('DeleteUserInput') deleteUserInput: DeleteUserInput): Promise<DeleteUserResponse> {
+    return this.userService.deleteUser(deleteUserInput.email);
   }
 }

@@ -11,15 +11,34 @@ type User {
   accessToken: String
 }
 
+type DeleteUserResponse {
+  success: Boolean!
+  message: String
+}
+
+type LoginUserResponse {
+  id: Float!
+  firstName: String!
+  lastName: String!
+  email: String!
+  accessToken: String
+}
+
 type Query {
+  login(LoginUserInput: LoginUserInput!): LoginUserResponse!
   findAllUsers: [User!]!
   user(id: Int!): User!
 }
 
+input LoginUserInput {
+  email: String!
+  password: String!
+}
+
 type Mutation {
-  createUser(createUserInput: CreateUserInput!): User!
+  createUser(CreateUserInput: CreateUserInput!): User!
   updateUser(updateUserInput: UpdateUserInput!): User!
-  removeUser(id: Int!): User!
+  deleteUser(DeleteUserInput: DeleteUserInput!): DeleteUserResponse!
 }
 
 input CreateUserInput {
@@ -35,4 +54,8 @@ input UpdateUserInput {
   email: String
   password: String
   id: Int!
+}
+
+input DeleteUserInput {
+  email: String!
 }
