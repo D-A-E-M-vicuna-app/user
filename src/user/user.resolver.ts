@@ -8,6 +8,10 @@ import { DeleteUserInput } from './dto/delete-user.input';
 import { LoginUserResponse } from './responses/login-user.response';
 import { LoginUserInput } from './dto/login-user.input';
 import { CreateUserResponse } from './responses/create-user.response';
+import { recoveryPasswordResponse } from './responses/recovery-password.response';
+import { RecoveryPasswordInput } from './dto/recovery-password.input';
+import { ChangePasswordInput } from './dto/change-password.input';
+import { ChangePasswordResponse } from './responses/change-password.response';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -42,4 +46,15 @@ export class UserResolver {
   async deleteUser(@Args('DeleteUserInput') deleteUserInput: DeleteUserInput): Promise<DeleteUserResponse> {
     return this.userService.deleteUser(deleteUserInput.email);
   }
+
+  @Mutation(() => recoveryPasswordResponse, { name: 'recoveryPassword' })
+  async recoveryPassword(@Args('RecoveryPasswordInput') recoveryPasswordInput: RecoveryPasswordInput): Promise<recoveryPasswordResponse> {
+    return this.userService.recoveryPassword(recoveryPasswordInput.email);
+  }
+
+  @Mutation(() => ChangePasswordResponse, { name: 'changePassword' })
+  async changePassword(@Args('ChangePasswordInput') changePasswordInput: ChangePasswordInput): Promise<ChangePasswordResponse> {
+    return this.userService.changePassword(changePasswordInput);
+  }
+
 }

@@ -28,4 +28,8 @@ export class User {
   @Field({ nullable: true })
   @Column({ nullable: true })
   accessToken: string;
+
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  recoveryPasswordToken: string;
 }

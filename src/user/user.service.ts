@@ -11,6 +11,9 @@ import { LoginUserResponse } from './responses/login-user.response';
 import * as jwt from 'jsonwebtoken';
 import * as dotenv from 'dotenv';
 import { CreateUserResponse } from './responses/create-user.response';
+import { recoveryPasswordResponse } from './responses/recovery-password.response';
+import { ChangePasswordInput } from './dto/change-password.input';
+import { ChangePasswordResponse } from './responses/change-password.response';
 dotenv.config();
 
 @Injectable()
@@ -75,6 +78,7 @@ export class UserService {
       lastName: newUser.lastName,
       email: newUser.email,
       accessToken: newUser.accessToken,
+      recoveryPasswordToken: newUser.recoveryPasswordToken,
     };
   }
 
@@ -99,6 +103,75 @@ export class UserService {
     this.usersRepository.remove(user);
     return { success: true, message: 'User deleted successfully'}
   }
+
+  async recoveryPassword(email: string): Promise<recoveryPasswordResponse> {
+    const user = await this.usersRepository.findOne({ where: { email } });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    //generar un token de recuperacion de contraseña
+    const recoveryToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    user.recoveryPasswordToken = recoveryToken;
+    await this.usersRepository.save(user);
+    this.sendEmail(email, recoveryToken);
+    return { success: true, message: 'mail sent successfully'}
+    //enviar el token por correo
+    
+  }
+
+  async sendEmail(email: string, recoveryPasswordToken: string){
+    const nodemailer = require('nodemailer');
+    const client = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD
+      }
+    }); 
+
+    client.sendMail(
+    {
+      from: 'Area informatica D.A.E.M. <noreply@ejemplo.com>',
+      to: email,
+      subject: 'Recuperacion de contraseña',
+      html: `
+        <h1>Recuperacion de contraseña</h1>
+        <p>Para recuperar su contraseña ingrese el siguiente codigo: ${recoveryPasswordToken}</p>
+        <p>Atte: Area informatica D.A.E.M.</p>
+      
+      `
+        
+    },
+    (error) => {
+      if (error) {
+        throw new Error('Error sending email');
+      } 
+    }
+    
+    
+    );
+
+  }
+
+  async changePassword(changePasswordInput: ChangePasswordInput): Promise<ChangePasswordResponse> {
+
+    const user = await this.usersRepository.findOne({ where: { recoveryPasswordToken: changePasswordInput.recoveryPasswordCode } });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    //comparar las contraseñas
+    if (changePasswordInput.newPassword !== changePasswordInput.confirmNewPassword) {
+      throw new Error('Passwords do not match');
+    }
+    //encriptar la nueva contraseña
+    const newPasswordHashed = await bcrypt.hash(changePasswordInput.newPassword, 10);
+    user.password = newPasswordHashed;
+    user.recoveryPasswordToken = null;
+    await this.usersRepository.save(user);
+    return { success: true, message: 'Password changed successfully'}
+  }
+
+
   /*
   async logout(userId: number): Promise<void> {
   const user = await this.usersRepository.findOne(userId);

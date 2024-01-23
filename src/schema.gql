@@ -9,6 +9,7 @@ type User {
   email: String!
   password: String!
   accessToken: String
+  recoveryPasswordToken: String
 }
 
 type DeleteUserResponse {
@@ -22,6 +23,16 @@ type LoginUserResponse {
   lastName: String!
   email: String!
   accessToken: String
+}
+
+type recoveryPasswordResponse {
+  success: Boolean!
+  message: String
+}
+
+type ChangePasswordResponse {
+  success: Boolean!
+  message: String
 }
 
 type Query {
@@ -39,6 +50,8 @@ type Mutation {
   createUser(CreateUserInput: CreateUserInput!): User!
   updateUser(updateUserInput: UpdateUserInput!): User!
   deleteUser(DeleteUserInput: DeleteUserInput!): DeleteUserResponse!
+  recoveryPassword(RecoveryPasswordInput: RecoveryPasswordInput!): recoveryPasswordResponse!
+  changePassword(ChangePasswordInput: ChangePasswordInput!): ChangePasswordResponse!
 }
 
 input CreateUserInput {
@@ -58,4 +71,14 @@ input UpdateUserInput {
 
 input DeleteUserInput {
   email: String!
+}
+
+input RecoveryPasswordInput {
+  email: String!
+}
+
+input ChangePasswordInput {
+  recoveryPasswordCode: String!
+  newPassword: String!
+  confirmNewPassword: String!
 }

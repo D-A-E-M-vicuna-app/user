@@ -16,4 +16,7 @@ export class CreateUserResponse {
 
   @Field({ nullable: true })
   accessToken?: string;
+
+  @Field({ nullable: true })
+  recoveryPasswordToken?: string;
 }
