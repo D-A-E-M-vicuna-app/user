@@ -14,6 +14,7 @@ import { CreateUserResponse } from './responses/create-user.response';
 import { recoveryPasswordResponse } from './responses/recovery-password.response';
 import { ChangePasswordInput } from './dto/change-password.input';
 import { ChangePasswordResponse } from './responses/change-password.response';
+import { UpdateUserResponse } from './responses/update-user.response';
 dotenv.config();
 
 @Injectable()
@@ -22,7 +23,7 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-  ) {}
+  ) { }
 
   async login(loginUserInput: LoginUserInput): Promise<LoginUserResponse> {
     const user = await this.usersRepository.findOne({ where: { email: loginUserInput.email } });
@@ -47,7 +48,7 @@ export class UserService {
       email: user.email,
       accessToken: user.accessToken,
     };
-  }  
+  }
 
   async createUser(createUserInput: CreateUserInput): Promise<CreateUserResponse> {
     //verificar que no exista el usuario en la base de datos
@@ -90,10 +91,6 @@ export class UserService {
     return `This action returns a #${id} user`;
   }
 
-  update(id: number, updateUserInput: UpdateUserInput) {
-    return `This action updates a #${id} user`;
-  }
-
   async deleteUser(email: string): Promise<DeleteUserResponse> {
     const user = await this.usersRepository.findOne({ where: { email } });
     if (!user) {
@@ -101,7 +98,7 @@ export class UserService {
       //throw new Error('User not found');
     }
     this.usersRepository.remove(user);
-    return { success: true, message: 'User deleted successfully'}
+    return { success: true, message: 'User deleted successfully' }
   }
 
   async recoveryPassword(email: string): Promise<recoveryPasswordResponse> {
@@ -114,12 +111,12 @@ export class UserService {
     user.recoveryPasswordToken = recoveryToken;
     await this.usersRepository.save(user);
     this.sendEmail(email, recoveryToken);
-    return { success: true, message: 'mail sent successfully'}
+    return { success: true, message: 'mail sent successfully' }
     //enviar el token por correo
-    
+
   }
 
-  async sendEmail(email: string, recoveryPasswordToken: string){
+  async sendEmail(email: string, recoveryPasswordToken: string) {
     const nodemailer = require('nodemailer');
     const client = nodemailer.createTransport({
       service: 'gmail',
@@ -127,28 +124,28 @@ export class UserService {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASSWORD
       }
-    }); 
+    });
 
     client.sendMail(
-    {
-      from: 'Area informatica D.A.E.M. <noreply@ejemplo.com>',
-      to: email,
-      subject: 'Recuperacion de contraseña',
-      html: `
+      {
+        from: 'Area informatica D.A.E.M. <noreply@ejemplo.com>',
+        to: email,
+        subject: 'Recuperacion de contraseña',
+        html: `
         <h1>Recuperacion de contraseña</h1>
         <p>Para recuperar su contraseña ingrese el siguiente codigo: ${recoveryPasswordToken}</p>
         <p>Atte: Area informatica D.A.E.M.</p>
       
       `
-        
-    },
-    (error) => {
-      if (error) {
-        throw new Error('Error sending email');
-      } 
-    }
-    
-    
+
+      },
+      (error) => {
+        if (error) {
+          throw new Error('Error sending email');
+        }
+      }
+
+
     );
 
   }
@@ -168,7 +165,38 @@ export class UserService {
     user.password = newPasswordHashed;
     user.recoveryPasswordToken = null;
     await this.usersRepository.save(user);
-    return { success: true, message: 'Password changed successfully'}
+    return { success: true, message: 'Password changed successfully' }
+  }
+
+  async updateUser(updateUserInput: UpdateUserInput): Promise<UpdateUserResponse> {
+    const user = await this.usersRepository.findOne({ where: { email: updateUserInput.oldEmail } });
+
+    if (!user) {
+      throw new Error('User not exists');
+    }
+
+    if (updateUserInput.newEmail !== updateUserInput.oldEmail) {
+      const userExists = await this.usersRepository.findOne({ where: { email: updateUserInput.newEmail } });
+
+      if (userExists) {
+        throw new Error('User already exists');
+      }
+
+      user.email = updateUserInput.newEmail;
+    }
+
+    user.firstName = updateUserInput.firstName;
+    user.lastName = updateUserInput.lastName;
+
+    await this.usersRepository.save(user);
+
+    return {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      accessToken: user.accessToken,
+    };
   }
 
 

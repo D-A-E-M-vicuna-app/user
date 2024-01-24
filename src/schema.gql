@@ -35,6 +35,14 @@ type ChangePasswordResponse {
   message: String
 }
 
+type UpdateUserResponse {
+  id: Float!
+  firstName: String!
+  lastName: String!
+  email: String!
+  accessToken: String
+}
+
 type Query {
   login(LoginUserInput: LoginUserInput!): LoginUserResponse!
   findAllUsers: [User!]!
@@ -48,10 +56,10 @@ input LoginUserInput {
 
 type Mutation {
   createUser(CreateUserInput: CreateUserInput!): User!
-  updateUser(updateUserInput: UpdateUserInput!): User!
   deleteUser(DeleteUserInput: DeleteUserInput!): DeleteUserResponse!
   recoveryPassword(RecoveryPasswordInput: RecoveryPasswordInput!): recoveryPasswordResponse!
   changePassword(ChangePasswordInput: ChangePasswordInput!): ChangePasswordResponse!
+  updateUser(UpdateUserInput: UpdateUserInput!): UpdateUserResponse!
 }
 
 input CreateUserInput {
@@ -59,14 +67,6 @@ input CreateUserInput {
   lastName: String!
   email: String!
   password: String!
-}
-
-input UpdateUserInput {
-  firstName: String
-  lastName: String
-  email: String
-  password: String
-  id: Int!
 }
 
 input DeleteUserInput {
@@ -81,4 +81,11 @@ input ChangePasswordInput {
   recoveryPasswordCode: String!
   newPassword: String!
   confirmNewPassword: String!
+}
+
+input UpdateUserInput {
+  firstName: String!
+  lastName: String!
+  oldEmail: String!
+  newEmail: String!
 }

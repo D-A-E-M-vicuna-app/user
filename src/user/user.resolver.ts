@@ -12,13 +12,14 @@ import { recoveryPasswordResponse } from './responses/recovery-password.response
 import { RecoveryPasswordInput } from './dto/recovery-password.input';
 import { ChangePasswordInput } from './dto/change-password.input';
 import { ChangePasswordResponse } from './responses/change-password.response';
+import { UpdateUserResponse } from './responses/update-user.response';
 
 @Resolver(() => User)
 export class UserResolver {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
-  @Query(() => LoginUserResponse, {name: 'login'})
-  login(@Args('LoginUserInput') loginUserInput: LoginUserInput): Promise<LoginUserResponse>{
+  @Query(() => LoginUserResponse, { name: 'login' })
+  login(@Args('LoginUserInput') loginUserInput: LoginUserInput): Promise<LoginUserResponse> {
     return this.userService.login(loginUserInput);
   }
 
@@ -37,11 +38,6 @@ export class UserResolver {
     return this.userService.findOne(id);
   }
 
-  @Mutation(() => User)
-  updateUser(@Args('updateUserInput') updateUserInput: UpdateUserInput) {
-    return this.userService.update(updateUserInput.id, updateUserInput);
-  }
-
   @Mutation(() => DeleteUserResponse, { name: 'deleteUser' })
   async deleteUser(@Args('DeleteUserInput') deleteUserInput: DeleteUserInput): Promise<DeleteUserResponse> {
     return this.userService.deleteUser(deleteUserInput.email);
@@ -55,6 +51,11 @@ export class UserResolver {
   @Mutation(() => ChangePasswordResponse, { name: 'changePassword' })
   async changePassword(@Args('ChangePasswordInput') changePasswordInput: ChangePasswordInput): Promise<ChangePasswordResponse> {
     return this.userService.changePassword(changePasswordInput);
+  }
+
+  @Mutation(() => UpdateUserResponse, { name: 'updateUser' })
+  async updateUser(@Args('UpdateUserInput') updateUserInput: UpdateUserInput): Promise<UpdateUserResponse> {
+    return this.userService.updateUser(updateUserInput);
   }
 
 }
