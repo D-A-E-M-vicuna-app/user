@@ -11,7 +11,7 @@ import { join } from 'path';
 
 @Module({
   imports: [
-    GraphQLModule.forRoot<ApolloDriverConfig>({
+    /*GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       context: ({ req, res }) => ({ req, res }),
@@ -20,7 +20,7 @@ import { join } from 'path';
           "editor.theme": 'dark'
         }
       }
-    }),
+    }),*/
     ConfigModule.forRoot({
       envFilePath: ['.env'],
       isGlobal: true,  
