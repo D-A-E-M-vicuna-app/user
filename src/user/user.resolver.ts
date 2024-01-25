@@ -18,7 +18,7 @@ import { UpdateUserResponse } from './responses/update-user.response';
 export class UserResolver {
   constructor(private readonly userService: UserService) { }
 
-  @Query(() => LoginUserResponse, { name: 'login' })
+  @Mutation(() => LoginUserResponse, { name: 'login' })
   login(@Args('LoginUserInput') loginUserInput: LoginUserInput): Promise<LoginUserResponse> {
     return this.userService.login(loginUserInput);
   }
