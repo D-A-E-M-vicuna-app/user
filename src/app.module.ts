@@ -1,12 +1,13 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { GraphQLModule } from '@nestjs/graphql';
-import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { join } from 'path';
+//import { GraphQLModule } from '@nestjs/graphql';
+//import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+//import { join } from 'path';
+//import { AuthenticationMiddleware } from './authentication.middleware';
 
 
 @Module({
@@ -40,3 +41,11 @@ import { join } from 'path';
   providers: [AppService],
 })
 export class AppModule {}
+/*
+export class AppModule implements NestModule{
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthenticationMiddleware)
+      .forRoutes('login'); // Reemplaza 'protected-route' con la ruta que quieras proteger
+  }
+}*/

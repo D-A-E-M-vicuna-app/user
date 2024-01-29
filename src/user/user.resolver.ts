@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Int, Context } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
@@ -13,13 +13,19 @@ import { RecoveryPasswordInput } from './dto/recovery-password.input';
 import { ChangePasswordInput } from './dto/change-password.input';
 import { ChangePasswordResponse } from './responses/change-password.response';
 import { UpdateUserResponse } from './responses/update-user.response';
+import { UnauthorizedException, ForbiddenException } from '@nestjs/common';
+import * as jwt from 'jsonwebtoken';
+import { UseGuards } from '@nestjs/common';
+import { AuthGuard } from './guards/auth.guard';
 
 @Resolver(() => User)
 export class UserResolver {
   constructor(private readonly userService: UserService) { }
 
+  //@UseGuards(AuthGuard)
   @Mutation(() => LoginUserResponse, { name: 'login' })
-  login(@Args('LoginUserInput') loginUserInput: LoginUserInput): Promise<LoginUserResponse> {
+  login(@Args('LoginUserInput') loginUserInput: LoginUserInput, @Context() context): Promise<LoginUserResponse> {
+    console.log('Contexto:', context.req.headers);
     return this.userService.login(loginUserInput);
   }
 
