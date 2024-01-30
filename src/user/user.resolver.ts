@@ -40,7 +40,7 @@ export class UserResolver {
   }
 
   @Query(() => User, { name: 'user' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
+  findOne(@Args('id', { type: () => Int }) id: number):Promise<User> {
     return this.userService.findOne(id);
   }
 

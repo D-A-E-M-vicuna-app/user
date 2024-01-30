@@ -87,8 +87,8 @@ export class UserService {
     return this.usersRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  findOne(id: number):Promise<User> {
+    return this.usersRepository.findOne({ where: { id } });
   }
 
   async deleteUser(email: string): Promise<DeleteUserResponse> {
