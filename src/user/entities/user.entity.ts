@@ -32,4 +32,8 @@ export class User {
   @Field({ nullable: true })
   @Column({ nullable: true })
   recoveryPasswordToken: string;
+
+  @Field()
+  @Column({ default: 'user' })
+  role: string;
 }

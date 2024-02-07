@@ -47,6 +47,7 @@ export class UserService {
       lastName: user.lastName,
       email: user.email,
       accessToken: user.accessToken,
+      role: user.role,
     };
   }
 
@@ -80,6 +81,8 @@ export class UserService {
       email: newUser.email,
       accessToken: newUser.accessToken,
       recoveryPasswordToken: newUser.recoveryPasswordToken,
+      role: newUser.role,
+
     };
   }
 
