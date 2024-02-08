@@ -22,4 +22,7 @@ export class CreateUserResponse {
 
   @Field()
   role: string;
+
+  @Field({ nullable: true})
+  institutionId: number;
 }

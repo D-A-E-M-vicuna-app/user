@@ -48,10 +48,11 @@ export class UserService {
       email: user.email,
       accessToken: user.accessToken,
       role: user.role,
+      institutionId: user.institutionId,
     };
   }
 
-  async createUser(createUserInput: CreateUserInput): Promise<CreateUserResponse> {
+  async createUser(createUserInput: CreateUserInput): Promise<User> {
     //verificar que no exista el usuario en la base de datos
     const passwordHashed = await bcrypt.hash(createUserInput.password, 10);
     const existingUser = await this.usersRepository.findOne({ where: { email: createUserInput.email } });
@@ -71,19 +72,12 @@ export class UserService {
     // Asigna el accessToken al usuario
     newUser.accessToken = accessToken;
 
-    await this.usersRepository.save(newUser);
+    return await this.usersRepository.save(newUser);
 
 
-    return {
-      id: newUser.id,
-      firstName: newUser.firstName,
-      lastName: newUser.lastName,
-      email: newUser.email,
-      accessToken: newUser.accessToken,
-      recoveryPasswordToken: newUser.recoveryPasswordToken,
-      role: newUser.role,
+    
 
-    };
+    
   }
 
   findAll(): Promise<User[]> {

@@ -30,11 +30,11 @@ export class UserResolver {
   }
 
   @Mutation(() => User)
-  createUser(@Args('CreateUserInput') createUserInput: CreateUserInput): Promise<CreateUserResponse> {//register
+  createUser(@Args('CreateUserInput') createUserInput: CreateUserInput): Promise<User> {//register
     return this.userService.createUser(createUserInput);
   }
 
-  @Query(() => [User], { name: 'findAllUsers' })
+  @Query(() => [User], { name: 'users' })
   findAll(): Promise<User[]> {
     return this.userService.findAll();
   }

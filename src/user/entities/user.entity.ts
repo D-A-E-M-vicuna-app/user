@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
-import { ObjectType, Field, ID } from '@nestjs/graphql';
+import { ObjectType, Field, ID, Int } from '@nestjs/graphql';
 
 @ObjectType()
 @Entity()
@@ -36,4 +36,8 @@ export class User {
   @Field()
   @Column({ default: 'user' })
   role: string;
+
+  @Field(() => Int, { nullable: true })
+  @Column({nullable: true})
+  institutionId?: number;
 }

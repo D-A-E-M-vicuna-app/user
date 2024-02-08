@@ -17,6 +17,9 @@ export class LoginUserResponse {
   @Field({ nullable: true })
   accessToken?: string;
 
- @Field()
- role: string; 
+  @Field()
+  role: string; 
+
+  @Field()
+  institutionId: number;
 }

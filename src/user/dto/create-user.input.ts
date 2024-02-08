@@ -18,4 +18,7 @@ export class CreateUserInput {
   @Field()
   role: string;
 
+  @Field(type => Int, {nullable: true})  
+  institutionId?: number;
+
 }
