@@ -1,4 +1,4 @@
-import { ObjectType, Field } from '@nestjs/graphql';
+import { ObjectType, Field, Int } from '@nestjs/graphql';
 
 @ObjectType()
 export class LoginUserResponse {
@@ -20,6 +20,6 @@ export class LoginUserResponse {
   @Field()
   role: string; 
 
-  @Field()
-  institutionId: number;
+  @Field(() => Int, { nullable: true })
+  institutionId?: number;
 }
