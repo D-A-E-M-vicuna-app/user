@@ -182,8 +182,13 @@ export class UserService {
       user.email = updateUserInput.newEmail;
     }
 
-    user.firstName = updateUserInput.firstName;
-    user.lastName = updateUserInput.lastName;
+    if (updateUserInput.firstName) { // Verifica si firstName existe antes de asignarlo
+      user.firstName = updateUserInput.firstName;
+    }
+  
+    if (updateUserInput.lastName) { // Verifica si lastName existe antes de asignarlo
+      user.lastName = updateUserInput.lastName;
+    }
 
     await this.usersRepository.save(user);
 

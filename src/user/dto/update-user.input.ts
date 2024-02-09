@@ -6,16 +6,16 @@ export class UpdateUserInput  {
   
  
 
-  @Field()
+  @Field({nullable: true})
   firstName?: string;
 
-  @Field()
+  @Field({nullable: true})
   lastName?: string;
 
   @Field()
   oldEmail: string;
 
-  @Field()
-  newEmail: string;
+  @Field({nullable: true})
+  newEmail?: string;
  
 }
