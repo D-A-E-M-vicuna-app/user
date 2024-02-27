@@ -71,7 +71,42 @@ export class UserService {
 
     // Asigna el accessToken al usuario
     newUser.accessToken = accessToken;
+    //enviar correo con nodemailer
+    
+    const firstName = createUserInput.firstName;
+    const lastName = createUserInput.lastName;
+    const email = createUserInput.email;
+    const nodemailer = require('nodemailer');
+    const client = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD
+      }
+    })
+    try{
+      await client.sendMail({
+        from: 'Area informatica D.A.E.M. <noreply@example.com>',
+        to: email,
+        subject: 'Bienvenido a la plataforma',
+        html: `
+        <h1>Bienvenido a la plataforma</h1>
+        <p>Hola ${firstName} ${lastName},</p>
+        <p>Te informamos que has sido registrado exitosamente en
+        la plataforma del D.A.E.M.</p>
+        <p>Tus credenciales de acceso son:</p>
+        <p>Correo: ${createUserInput.email}</p>
+        <p>Contraseña: ${createUserInput.password}</p>
+        <p>Rol: ${createUserInput.role}</p>
+        <p>Atte: Area informatica D.A.E.M.</p>
+      `,
 
+      })
+
+    }catch(error){
+      console.error('Error sending email', error);
+      throw new Error('Error sending email');
+    }
     return await this.usersRepository.save(newUser);
 
 
