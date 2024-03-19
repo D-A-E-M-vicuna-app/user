@@ -43,7 +43,7 @@ export class UserService {
       throw new Error('Invalid credentials');
     }
     //generar el token
-    const newAccessToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const newAccessToken = jwt.sign({ userId: user.id }, process.env.NEXT_PUBLIC_JWT_SECRET, { expiresIn: '1h' });
     user.accessToken = newAccessToken;
     await this.usersRepository.save(user);
 
@@ -73,7 +73,7 @@ export class UserService {
     });
 
     // Genera un nuevo accessToken
-    const accessToken = jwt.sign({ userId: newUser.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const accessToken = jwt.sign({ userId: newUser.id }, process.env.NEXT_PUBLIC_JWT_SECRET, { expiresIn: '1h' });
 
     // Asigna el accessToken al usuario
     newUser.accessToken = accessToken;
@@ -145,7 +145,7 @@ export class UserService {
       throw new Error('User not found');
     }
     //generar un token de recuperacion de contraseña
-    const recoveryToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const recoveryToken = jwt.sign({ userId: user.id }, process.env.NEXT_PUBLIC_JWT_SECRET, { expiresIn: '1h' });
     user.recoveryPasswordToken = recoveryToken;
     await this.usersRepository.save(user);
     this.sendEmail(email, recoveryToken);

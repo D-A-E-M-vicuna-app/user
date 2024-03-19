@@ -21,7 +21,7 @@ export class AuthenticationMiddleware implements NestMiddleware {
       return res.sendStatus(401); // Si no hay token, enviar un error 401
     }
 
-    jwt.verify(token, process.env.JWT_SECRET, (err: any, user: any) => {
+    jwt.verify(token, process.env.NEXT_PUBLIC_JWT_SECRET, (err: any, user: any) => {
       if (err) {
         return res.sendStatus(403); // Si el token es inválido, enviar un error 403
       }
