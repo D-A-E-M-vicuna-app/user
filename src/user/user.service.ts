@@ -35,9 +35,9 @@ export class UserService {
     const isPasswordValid = await bcrypt.compare(loginUserInput.password, user.password);
     if (!isPasswordValid) {
       //solo para crear al super@admin luego eliminar este bloque
-      const newPasswordHashed = await bcrypt.hash(loginUserInput.password, 10);
-      user.password = newPasswordHashed;
-      await this.usersRepository.save(user);
+      //const newPasswordHashed = await bcrypt.hash(loginUserInput.password, 10);
+      //user.password = newPasswordHashed;
+      //await this.usersRepository.save(user);
 
       //fin
       throw new Error('Invalid credentials');
